@@ -20,10 +20,11 @@ class Square extends React.Component {
   class Board extends React.Component {
         constructor(props) {
             super(props);
+            const longtable= this.props.nbImage*2
             const arrayNbImage=[]
             const arrayNumber=[]
             //generate fake data
-            for(let i = 0; i< this.props.nbImage*2; i++){
+            for(let i = 0; i< longtable; i++){
               arrayNumber.push(i)
               if( i < this.props.nbImage){
                 arrayNbImage.push(i)
@@ -32,21 +33,15 @@ class Square extends React.Component {
                 arrayNbImage.push(i-this.props.nbImage)
               }
             }
-            console.log(arrayNbImage)
-            console.log(arrayNumber)
+            const randArrayNumber=shuffleArray(arrayNumber)
+            console.log(randArrayNumber)
             const testTable=[]
             const table = (testTable) => arrayNumber.map(x => testTable.push({id: x, value: arrayNbImage[x] , etat: 0})) 
+            table(testTable)
             
-            console.log(table(testTable))
+            
             this.state = {
-                table : [
-                  { id :0, value: 0, etat: 0},
-                  { id :1, value: 1, etat: 0},
-                  { id :2, value: 0, etat: 0},
-                  { id :3, value: 1, etat: 0},
-                  { id :4, value: 2, etat: 0},
-                  { id :5, value: 2, etat: 0},
-                ],
+                table : testTable,
                 player : [
                     {id:0,name:"joueur 1",score:0},
                     {id:1,name:"joueur 2",score:0}
@@ -60,6 +55,11 @@ class Square extends React.Component {
             const newState=Object.assign({},prevstate)
             const etatTable = prevstate.table.filter(x => x.etat === 1);
             const validateTable = prevstate.table.filter(x=>x.etat === 2);
+            if (calculateEndgame(prevstate.table)){
+                console.log("you win")
+            }
+
+
             if (etatTable.length<1){
                 // first Move
                 if (prevstate.table[i].etat === 2){
@@ -134,16 +134,23 @@ class Square extends React.Component {
     renderSquare(i) {
       return <Square square={this.state.table[i]} index={i} idJoueur= {this.state.currentPlayer.id} updateBoard= {() => this.updateBoard(i)} />;
     }
+    
     render() {
-        
-        
+
         const win ="you win";
 
         const tabAr=[0,1,2,3];
+        console.log(shuffleArray(tabAr))
         const players = this.state.player
         const quiJoue = (id) => this.state.currentPlayer.id === id ? "A ton tour" :""
         const playerInfo= (players) => players.map(x => <div >nom : {x.name} score : {x.score}    {quiJoue(x.id)} </div>);
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
         const lines = (x) => x.forEach(element => <div  > {this.renderSquare(element)} </div>); 
+
+        
+        /* const createTablerandomize = (table) => Math.ra
+        lines( */
+        // i need to create a table with format list[].lengt(2)= list['',''] 
         const x= tabAr
         
         /* const tableau= (long) => tab.map(x=> <div className="board-row">{lines(x.width)} </div> ) */
@@ -171,7 +178,7 @@ class Square extends React.Component {
       
       this.state = {
           gameSelect : false,
-          nbrImage : 4
+          nbrImage : 5
       }
       
       
@@ -211,9 +218,17 @@ class Square extends React.Component {
   
   function calculateEndgame(squares) {
 
-    const tableVide = squares.table.filter(x => x.etat === 2);
+    const tableVide = squares.filter(x => x.etat === 2);
     if (tableVide.length===squares.length ){
       return true;
     }
     return false;
+}
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
 }
