@@ -33,13 +33,12 @@ class Square extends React.Component {
                 arrayNbImage.push(i-this.props.nbImage)
               }
             }
-            const randArrayNumber=shuffleArray(arrayNumber)
+            const randArrayNumber=shuffleArray(arrayNbImage)
             console.log(randArrayNumber)
             const testTable=[]
             const table = (testTable) => arrayNumber.map(x => testTable.push({id: x, value: arrayNbImage[x] , etat: 0})) 
             table(testTable)
-            
-            
+
             this.state = {
                 table : testTable,
                 player : [
@@ -134,20 +133,37 @@ class Square extends React.Component {
     renderSquare(i) {
       return <Square square={this.state.table[i]} index={i} idJoueur= {this.state.currentPlayer.id} updateBoard= {() => this.updateBoard(i)} />;
     }
-    
+    createLine(i,tableDim){
+      const renderTable=[]
+      for(let f=i*tableDim;f<i*tableDim+tableDim;f++)
+        {
+          if(f===this.props.nbImage*2){
+            console.log("do nothing")
+          }
+          else{
+            renderTable.push(this.renderSquare(f))
+          }
+        }
+        return renderTable
+    }
+    createLines(tableDim){
+      const renderLines=[]
+      for( let i=0;i<tableDim;i++){
+         renderLines.push(<div className="board-row">{this.createLine(i,tableDim)}</div>)}
+      
+      return renderLines
+    }
+
     render() {
 
         const win ="you win";
-
+        
         const tabAr=[0,1,2,3];
-        console.log(shuffleArray(tabAr))
         const players = this.state.player
         const quiJoue = (id) => this.state.currentPlayer.id === id ? "A ton tour" :""
         const playerInfo= (players) => players.map(x => <div >nom : {x.name} score : {x.score}    {quiJoue(x.id)} </div>);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
-        const lines = (x) => x.forEach(element => <div  > {this.renderSquare(element)} </div>); 
-
-        
+        const tableDim= Math.sqrt(this.props.nbImage*2)-Math.trunc(Math.sqrt(this.props.nbImage*2)) == 0 ? Math.trunc(Math.sqrt(this.props.nbImage*2)) : Math.trunc(Math.sqrt(this.props.nbImage*2))+1
+        console.log("ici",tableDim)
         /* const createTablerandomize = (table) => Math.ra
         lines( */
         // i need to create a table with format list[].lengt(2)= list['',''] 
@@ -157,16 +173,7 @@ class Square extends React.Component {
       return (
         <div>
         <div className="status">{playerInfo(players)}</div>
-          <div className="board-row">
-            {this.renderSquare(0)}
-            {this.renderSquare(1)}
-            {this.renderSquare(2)}
-          </div>
-          <div className="board-row">
-            {this.renderSquare(3)}
-            {this.renderSquare(4)}
-            {this.renderSquare(5)}
-          </div>
+        <div className="status">{this.createLines(tableDim)}</div>
         </div>
       );
     }
@@ -178,7 +185,7 @@ class Square extends React.Component {
       
       this.state = {
           gameSelect : false,
-          nbrImage : 5
+          nbrImage : 3
       }
       
       
