@@ -20,25 +20,27 @@ class Square extends React.Component {
   class Board extends React.Component {
         constructor(props) {
             super(props);
-            const longtable= this.props.nbImage*2
+            const width = this.props.lengthSelect.width
+            const heigth = this.props.lengthSelect.height
+            const nbImage=width*heigth%2 ==0 ? width*heigth : width*heigth-1
+            console.log(this.props.lengthSelect.w)
+            console.log(nbImage)
             const arrayNbImage=[]
             const arrayNumber=[]
-            //generate fake data
-            for(let i = 0; i< longtable; i++){
+            for(let i = 0; i< nbImage; i++){
               arrayNumber.push(i)
-              if( i < this.props.nbImage){
+              if( i < nbImage/2){
                 arrayNbImage.push(i)
               }
-              if( i>= this.props.nbImage){
-                arrayNbImage.push(i-this.props.nbImage)
+              if( i>= nbImage/2){
+                arrayNbImage.push(i-(nbImage/2))
               }
             }
-            const randArrayNumber=shuffleArray(arrayNbImage)
-            console.log(randArrayNumber)
+            shuffleArray(arrayNbImage)
             const testTable=[]
             const table = (testTable) => arrayNumber.map(x => testTable.push({id: x, value: arrayNbImage[x] , etat: 0})) 
             table(testTable)
-
+            
             this.state = {
                 table : testTable,
                 player : [
@@ -48,7 +50,6 @@ class Square extends React.Component {
                 currentPlayer : {id:0}
             };
         }
-
     updateBoard(i) {
         this.setState((prevstate,props) => {
             const newState=Object.assign({},prevstate)
@@ -57,8 +58,6 @@ class Square extends React.Component {
             if (calculateEndgame(prevstate.table)){
                 console.log("you win")
             }
-
-
             if (etatTable.length<1){
                 // first Move
                 if (prevstate.table[i].etat === 2){
@@ -76,15 +75,17 @@ class Square extends React.Component {
                 } else {
                     newState.table[i].etat=1;
                 }
-            } else {
-                console.log("validateCLick")
-                return this.validateClick(prevstate)
+                newState= this.waitingResult(prevstate)
             }
-            return newState 
+            return newState
         })
 
     }
-    
+    waitingResult(prevstate){
+      new Promise(resolve => {
+        setTimeout(this.validateClick(prevstate), 2000);
+      });
+    }
     validateClick(prevstate) {
         const newState=Object.assign({},prevstate)
         const etatTable = prevstate.table.filter(x => x.etat === 1);
@@ -110,7 +111,7 @@ class Square extends React.Component {
         return newState
     }
 
-    playerTurn(prevstate,increment){
+    playerTurn(prevstate){
         // increment by one the id of player 
         const newState=Object.assign({},prevstate)
         const len=newState.player.length;
@@ -133,12 +134,13 @@ class Square extends React.Component {
     renderSquare(i) {
       return <Square square={this.state.table[i]} index={i} idJoueur= {this.state.currentPlayer.id} updateBoard= {() => this.updateBoard(i)} />;
     }
-    createLine(i,tableDim){
+    createLine(i,width,height){
       const renderTable=[]
-      for(let f=i*tableDim;f<i*tableDim+tableDim;f++)
+      const nbCard=width*height%2 ==0 ? width*height : width*height-1
+      for(let f=i*height;f<i*height+height;f++)
         {
-          if(f===this.props.nbImage*2){
-            console.log("do nothing")
+          if(f===nbCard && nbCard%2 === 1){
+            
           }
           else{
             renderTable.push(this.renderSquare(f))
@@ -146,11 +148,13 @@ class Square extends React.Component {
         }
         return renderTable
     }
-    createLines(tableDim){
+    createLines(dim){
       const renderLines=[]
-      for( let i=0;i<tableDim;i++){
-         renderLines.push(<div className="board-row">{this.createLine(i,tableDim)}</div>)}
-      
+      console.log(dim.width)
+      for( let i=0;i< dim.width ;i++){
+         renderLines.push(<div className="board-row">{this.createLine(i,dim.width,dim.height)}</div>)
+        }
+      console.log(renderLines)
       return renderLines
     }
 
@@ -158,22 +162,16 @@ class Square extends React.Component {
 
         const win ="you win";
         
-        const tabAr=[0,1,2,3];
         const players = this.state.player
         const quiJoue = (id) => this.state.currentPlayer.id === id ? "A ton tour" :""
         const playerInfo= (players) => players.map(x => <div >nom : {x.name} score : {x.score}    {quiJoue(x.id)} </div>);
-        const tableDim= Math.sqrt(this.props.nbImage*2)-Math.trunc(Math.sqrt(this.props.nbImage*2)) == 0 ? Math.trunc(Math.sqrt(this.props.nbImage*2)) : Math.trunc(Math.sqrt(this.props.nbImage*2))+1
-        console.log("ici",tableDim)
-        /* const createTablerandomize = (table) => Math.ra
-        lines( */
-        // i need to create a table with format list[].lengt(2)= list['',''] 
-        const x= tabAr
         
-        /* const tableau= (long) => tab.map(x=> <div className="board-row">{lines(x.width)} </div> ) */
+        
+      
       return (
         <div>
         <div className="status">{playerInfo(players)}</div>
-        <div className="status">{this.createLines(tableDim)}</div>
+        <div className="status">{this.createLines(this.props.lengthSelect)}</div>
         </div>
       );
     }
@@ -185,14 +183,14 @@ class Square extends React.Component {
       
       this.state = {
           gameSelect : false,
-          nbrImage : 3
+          lengthSelect : {width : 4 ,height : 4}
       }
       
       
     }
     handleSubmit(event) {
       if (event.target.value % 2 === 0){
-        this.setState({nbrImage: event.target.value});
+        this.setState({lengthSelect: event.target.value});
       } else {
         console.log("that was odd number")
       }
@@ -205,7 +203,7 @@ class Square extends React.Component {
             {gameSelect()}
           </div>
           <div className="game-board">
-            {this.state.gameSelect ? "" :<Board nbImage={this.state.nbrImage}/>}
+            {this.state.gameSelect ? "" :<Board lengthSelect={this.state.lengthSelect}/>}
           </div>
           <div className="game-info">
             <div>{/* status */}</div>
@@ -238,4 +236,9 @@ function shuffleArray(array) {
         array[i] = array[j];
         array[j] = temp;
     }
+}
+async function waitingResult(prevstate){
+  new Promise(resolve => {
+    setTimeout(this.validateClick(prevstate), 10000);
+  });
 }
