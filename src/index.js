@@ -75,7 +75,8 @@ class Square extends React.Component {
                 } else {
                     newState.table[i].etat=1;
                 }
-                newState= this.waitingResult(prevstate)
+              }else{
+                return this.validateClick(prevstate)
             }
             return newState
         })
