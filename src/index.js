@@ -3,11 +3,17 @@ import ReactDOM, { createPortal } from 'react-dom';
 import './index.css';
 import listImg from './listImage.json';
 
+async function waitingResult(time){
+  return new Promise( function(resolve) {
+    setTimeout(resolve,time)
+    })
+  }
+
 class Square extends React.Component {
    
   render() {
     const card="https://lolstatic-a.akamaihd.net/frontpage/apps/prod/harbinger-l10-website/en-gb/production/en-gb/static/placeholder-1c66220c6149b49352c4cf496f70ad86.jpg";
-    console.log("1",this.props.square.value)
+    
 
     return (
       <button className={`square ${this.props.square.etat===0 ? "pointer" :"" }`} onClick={() => this.props.updateBoard(this.props.index)}>
@@ -59,20 +65,24 @@ class Square extends React.Component {
                 currentPlayer : {id:0}
             };
         }
-    updateBoard(i) {
-        this.setState((prevstate,props) => {
+   async updateBoard(i) {
+        this.setState(async(prevstate,props) => {
+          console.log("je rentre")
             const newState=Object.assign({},prevstate)
             const etatTable = prevstate.table.filter(x => x.etat === 1);
-            const validateTable = prevstate.table.filter(x=>x.etat === 2);
+            
             if (calculateEndgame(prevstate.table)){
                 console.log("you win")
             }
             if (etatTable.length<1){
                 // first Move
+                console.log("first Click")
                 if (prevstate.table[i].etat === 2){
                   return newState
                 }
                 newState.table[i].etat=1;
+                console.log("first",newState)
+                return newState
 
             } else if (etatTable.length === 1){
                 // second Move
@@ -82,19 +92,15 @@ class Square extends React.Component {
                 if(prevstate.table[i].etat === 1){
                     return newState
                 } else {
-                    newState.table[i].etat=1;
+                  newState.table[i].etat=1;
+                  await waitingResult(2000);
+                  console.log("wait finish")
+                  return await this.validateClick(newState)
+                  
                 }
-              }else{
-                return this.validateClick(prevstate)
-            }
-            return newState
+              }
         })
-
-    }
-    waitingResult(prevstate){
-      new Promise(resolve => {
-        setTimeout(this.validateClick(prevstate), 2000);
-      });
+        
     }
     validateClick(prevstate) {
         const newState=Object.assign({},prevstate)
@@ -102,23 +108,21 @@ class Square extends React.Component {
         
         if (etatTable[0].value===etatTable[1].value){
             //win this cards
-            
+            console.log("il fait ca")
             newState.table[etatTable[0].id].etat= 2
             newState.table[etatTable[1].id].etat= 2
-            this.incrementScore(newState,3)
+            return this.incrementScore(newState,3)
+            
         }else {
             //loose next player
             
             newState.table[etatTable[0].id].etat=0
             newState.table[etatTable[1].id].etat=0
+            console.log("before increment Score")
             const newStateIncremented= this.incrementScore(newState,-1)
-            console.log(newState.currentPlayer.id,"juste avant")
-            const nextTurnNewState = this.playerTurn(newStateIncremented,1) ;
-           
-            return nextTurnNewState
-
+            console.log("before playerTurn change")
+            return this.playerTurn(newStateIncremented,1) ;
         }
-        return newState
     }
 
     playerTurn(prevstate){
@@ -129,15 +133,15 @@ class Square extends React.Component {
         if (prevstate.currentPlayer.id === prevstate.player[len-1].id ){
             newState.currentPlayer.id = prevstate.player[0].id 
         }else {
-            console.log("current",newState.currentPlayer.id)
             newState.currentPlayer.id = prevstate.currentPlayer.id + 1;  
         }
+
         return newState
     }
     incrementScore(prevstate,point){
         const newState=Object.assign({},prevstate)
-        
         newState.player[newState.currentPlayer.id].score = newState.player[newState.currentPlayer.id].score + point;
+
         return newState
     }
 
@@ -281,8 +285,5 @@ function shuffleArray(array) {
         array[j] = temp;
     }
 }
-async function waitingResult(prevstate){
-  new Promise(resolve => {
-    setTimeout(this.validateClick(prevstate), 10000);
-  });
-}
+
+
