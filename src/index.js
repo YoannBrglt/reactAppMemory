@@ -5,11 +5,8 @@ import './index.css';
 class Square extends React.Component {
   
     render() {
-        
-        
-
       return (
-        <button className="square" onClick={() => this.props.updateBoard(this.props.index)}>
+        <button className={`square ${this.props.square.etat===0 ? "pointer" :"" }`} onClick={() => this.props.updateBoard(this.props.index)}>
 
           {this.props.square.etat === 0 ? "?" : this.props.square.etat ===2 ? null : this.props.square.value}
         </button>
@@ -20,11 +17,12 @@ class Square extends React.Component {
   class Board extends React.Component {
         constructor(props) {
             super(props);
-            const width = this.props.lengthSelect.width
-            const heigth = this.props.lengthSelect.height
-            const nbImage=width*heigth%2 ==0 ? width*heigth : width*heigth-1
-            console.log(this.props.lengthSelect.w)
-            console.log(nbImage)
+            const width = this.props.width
+            const height = this.props.height
+            
+            const nbImage=width*height%2 ==0 ? width*height : width*height-1
+            console.log(nbImage,width,height)
+            
             const arrayNbImage=[]
             const arrayNumber=[]
             for(let i = 0; i< nbImage; i++){
@@ -149,11 +147,10 @@ class Square extends React.Component {
         }
         return renderTable
     }
-    createLines(dim){
+    createLines(width,height){
       const renderLines=[]
-      console.log(dim.width)
-      for( let i=0;i< dim.width ;i++){
-         renderLines.push(<div className="board-row">{this.createLine(i,dim.width,dim.height)}</div>)
+      for( let i=0;i< width ;i++){
+         renderLines.push(<div className="board-row">{this.createLine(i,width,height)}</div>)
         }
       console.log(renderLines)
       return renderLines
@@ -172,7 +169,7 @@ class Square extends React.Component {
       return (
         <div>
         <div className="status">{playerInfo(players)}</div>
-        <div className="status">{this.createLines(this.props.lengthSelect)}</div>
+        <div className="status">{this.createLines(this.props.width,this.props.height)}</div>
         </div>
       );
     }
@@ -183,28 +180,64 @@ class Square extends React.Component {
       super();
       
       this.state = {
-          gameSelect : false,
-          lengthSelect : {width : 4 ,height : 4}
+          gameSelect : true,
+          width: 2,
+          height: 2,
+          nbJoueur: 1
       }
       
+      
+    }
+    changeWidth(event){
+      this.setState({width: parseInt(event.target.value)})
+    }
+    changeHeight(event){
+      this.setState({height: parseInt(event.target.value)})
+    }
+    changePseudo(event){
       
     }
     handleSubmit(event) {
-      if (event.target.value % 2 === 0){
-        this.setState({lengthSelect: event.target.value});
-      } else {
-        console.log("that was odd number")
+      console.log(event.target.value)
+        this.setState({gameSelect : false});
+        
       }
+    updateNumberPlayer(){
+      this.setState((prevstate) => {
+        const newState=Object.assign({},prevstate)
+        if(prevstate.nbJoueur === 1){
+          newState.nbJoueur=2
+        }
+        else{
+          newState.nbJoueur=1
+        }
+        return newState
+      })
+    }
+    gameSelect(){
+      if(this.state.gameSelect ){
+        return <div><form id="selectGame" onSubmit={this.handleSubmit.bind(this)}> choisir le nombre de cases du tableau 
+          <input name="select" id="width" type="number"min="2" max="8" onChange={this.changeWidth.bind(this)} required ></input>
+          <input name="select" id="heigth" type="number"min="2" max="8" onChange={this.changeHeight.bind(this)} required ></input>
+          selectioner votre pseudo
+          <input name="selectUsername" id="playerName" type="text" onChange={this.changePseudo.bind(this)} required ></input>
+          <input type="submit" ></input></form> 
+          <button className={"button"} id="nbJoueur" onClick={() => this.updateNumberPlayer()}> 
+            {this.state.nbJoueur === 1 ? "Un joueur" : "2 joueur"}
+          </button>
+          </div>
+      }
+      return ""
     }
     render() {
-      const gameSelect = () => this.state.gameSelect ? <form onSubmit={this.handleSubmit.bind(this)}><input name="select" type="text" pattern="[0-9]*" required ></input><input type="submit" ></input></form> : "";
+      
       return (
         <div className="game">
           <div >
-            {gameSelect()}
+            {this.gameSelect()}
           </div>
           <div className="game-board">
-            {this.state.gameSelect ? "" :<Board lengthSelect={this.state.lengthSelect}/>}
+            {this.state.gameSelect ? "" :<Board width={this.state.width} height={this.state.height}/>}
           </div>
           <div className="game-info">
             <div>{/* status */}</div>

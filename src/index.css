@@ -16,7 +16,11 @@ body {
   .status {
     margin-bottom: 10px;
   }
+  .pointer { cursor: pointer; }
   
+  .cursors > div:hover {
+    background: #eee;
+  }
   .square {
     background: #fff;
     border: 1px solid #999;
