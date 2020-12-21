@@ -4,17 +4,6 @@ import './index.css';
 import listImg from './listImage.json';
 
 class Square extends React.Component {
-<<<<<<< HEAD
-  
-    render() {
-      return (
-        <button className={`square ${this.props.square.etat===0 ? "pointer" :"" }`} onClick={() => this.props.updateBoard(this.props.index)}>
-
-          {this.props.square.etat === 0 ? "?" : this.props.square.etat ===2 ? null : this.props.square.value}
-        </button>
-      );
-    }
-=======
    
   render() {
     const card="https://lolstatic-a.akamaihd.net/frontpage/apps/prod/harbinger-l10-website/en-gb/production/en-gb/static/placeholder-1c66220c6149b49352c4cf496f70ad86.jpg";
@@ -27,7 +16,6 @@ class Square extends React.Component {
          : this.props.square.etat ===2 ? null : <img src={this.props.square.value} alt="new" width="125" heigth="125"></img>}
       </button>
     );
->>>>>>> develop
   }
 }
   
@@ -36,14 +24,7 @@ class Square extends React.Component {
             super(props);
             const width = this.props.width
             const height = this.props.height
-            
             const nbImage=width*height%2 ==0 ? width*height : width*height-1
-<<<<<<< HEAD
-            console.log(nbImage,width,height)
-=======
-            
->>>>>>> develop
-            
             const arrayNbImage=[]
             const tabImage=listImg
             shuffleArray(tabImage)
@@ -64,7 +45,6 @@ class Square extends React.Component {
             let incr=0
             const table = (testTable) => arrayNumber.map(x => testTable.push({id: arrayNumber[x], value: arrayNbImage[x]["url"] , etat: 0})) 
             table(testTable)
-            console.log(testTable)
             
             this.state = {
                 table : testTable,
@@ -224,38 +204,6 @@ class Square extends React.Component {
     changePseudo(event){
       
     }
-<<<<<<< HEAD
-    handleSubmit(event) {
-      console.log(event.target.value)
-        this.setState({gameSelect : false});
-        
-      }
-    updateNumberPlayer(){
-      this.setState((prevstate) => {
-        const newState=Object.assign({},prevstate)
-        if(prevstate.nbJoueur === 1){
-          newState.nbJoueur=2
-        }
-        else{
-          newState.nbJoueur=1
-        }
-        return newState
-      })
-    }
-    gameSelect(){
-      if(this.state.gameSelect ){
-        return <div><form id="selectGame" onSubmit={this.handleSubmit.bind(this)}> choisir le nombre de cases du tableau 
-          <input name="select" id="width" type="number"min="2" max="8" onChange={this.changeWidth.bind(this)} required ></input>
-          <input name="select" id="heigth" type="number"min="2" max="8" onChange={this.changeHeight.bind(this)} required ></input>
-          selectioner votre pseudo
-          <input name="selectUsername" id="playerName" type="text" onChange={this.changePseudo.bind(this)} required ></input>
-          <input type="submit" ></input></form> 
-          <button className={"button"} id="nbJoueur" onClick={() => this.updateNumberPlayer()}> 
-            {this.state.nbJoueur === 1 ? "Un joueur" : "2 joueur"}
-          </button>
-          </div>
-      }
-=======
     handleSubmit() {
         this.setState({gameSelect : false});
         
@@ -285,7 +233,6 @@ class Square extends React.Component {
           </button>
           </div>
       }
->>>>>>> develop
       return ""
     }
     render() {
