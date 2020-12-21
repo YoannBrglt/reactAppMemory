@@ -1,10 +1,13 @@
 import React from 'react';
 import ReactDOM, { createPortal } from 'react-dom';
 import './index.css';
+import listImg from './listImage.json';
+
 
 class Square extends React.Component {
-  
+   
     render() {
+<<<<<<< Updated upstream
         
         
 
@@ -12,6 +15,14 @@ class Square extends React.Component {
         <button className="square" onClick={() => this.props.updateBoard(this.props.index)}>
 
           {this.props.square.etat === 0 ? "?" : this.props.square.etat ===2 ? null : this.props.square.value}
+=======
+      const card="https://lolstatic-a.akamaihd.net/frontpage/apps/prod/harbinger-l10-website/en-gb/production/en-gb/static/placeholder-1c66220c6149b49352c4cf496f70ad86.jpg"
+      return (
+        <button className={`square ${this.props.square.etat===0 ? "pointer" :"" }`} onClick={() => this.props.updateBoard(this.props.index)}>
+          {this.props.square.etat === 0 ? 
+          <img src={card} alt="new" width="125" heigth="125"></img>
+           : this.props.square.etat ===2 ? null : this.props.square.value}
+>>>>>>> Stashed changes
         </button>
       );
     }
@@ -20,13 +31,25 @@ class Square extends React.Component {
   class Board extends React.Component {
         constructor(props) {
             super(props);
+<<<<<<< Updated upstream
             const width = this.props.lengthSelect.width
             const heigth = this.props.lengthSelect.height
             const nbImage=width*heigth%2 ==0 ? width*heigth : width*heigth-1
             console.log(this.props.lengthSelect.w)
             console.log(nbImage)
+=======
+            const width = this.props.width
+            const height = this.props.height
+            
+            const nbImage=width*height%2 ==0 ? width*height : width*height-1
+          
+            console.log(listImg[0]["name"])
+>>>>>>> Stashed changes
             const arrayNbImage=[]
+            const arrayImage=[]
             const arrayNumber=[]
+            console.log(selectRandom(2,listImg))
+
             for(let i = 0; i< nbImage; i++){
               arrayNumber.push(i)
               if( i < nbImage/2){
@@ -36,6 +59,7 @@ class Square extends React.Component {
                 arrayNbImage.push(i-(nbImage/2))
               }
             }
+
             shuffleArray(arrayNbImage)
             const testTable=[]
             const table = (testTable) => arrayNumber.map(x => testTable.push({id: x, value: arrayNbImage[x] , etat: 0})) 
@@ -233,10 +257,18 @@ class Square extends React.Component {
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
-        var temp = array[i];
+        let temp = array[i];
         array[i] = array[j];
         array[j] = temp;
     }
+}
+function selectRandom(length,array){
+  const tab=[length]
+    for(let i=0; i<length;i++){
+      let j=Math.floor(Math.random()* length);
+      tab.push(array.splice(j, 1)[0]);
+    }
+    return tab
 }
 async function waitingResult(prevstate){
   new Promise(resolve => {

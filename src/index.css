@@ -16,7 +16,15 @@ body {
   .status {
     margin-bottom: 10px;
   }
+<<<<<<< Updated upstream
   
+=======
+  .pointer { cursor: pointer; }
+
+  .cursors > div:hover {
+    background: #eee;
+  }
+>>>>>>> Stashed changes
   .square {
     background: #fff;
     border: 1px solid #999;
@@ -24,12 +32,12 @@ body {
     font-size: 24px;
     font-weight: bold;
     line-height: 34px;
-    height: 100px;
+    height: 125px;
     margin-right: -1px;
     margin-top: -1px;
     padding: 0;
     text-align: center;
-    width: 100px;
+    width: 125px;
   }
   
   .square:focus {
