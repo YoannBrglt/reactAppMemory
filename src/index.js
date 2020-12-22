@@ -3,17 +3,23 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import listImg from './listImage.json';
 
-
+function addClassById(id,classTag) {
+  console.log(id,"",classTag)
+  var element = document.getElementById(id);
+  element.classList.add(classTag);
+} 
+async function removeClassById(id,classTag){
+  var element = document.getElementById(id);
+  element.classList.remove(classTag);
+}
 
 class Square extends React.Component {
    
-  render() {
+   render() {
     const card="https://lolstatic-a.akamaihd.net/frontpage/apps/prod/harbinger-l10-website/en-gb/production/en-gb/static/placeholder-1c66220c6149b49352c4cf496f70ad86.jpg";
 
-    
-
     return (
-      <button className={`square ${this.props.square.etat===0 ? "pointer" :"" }`} onClick={() => this.props.updateBoard(this.props.index)}>
+      <button id={this.props.square.id} className={`square ${this.props.square.etat===0 ? "pointer " :"" } ${this.props.square.etat===0 ? "square-card" :"" }`} onClick={() => {this.props.updateBoard(this.props.index)}}>
         {this.props.square.etat === 0 ? 
         <img src={card} alt="new" width="125" heigth="125"></img>
          : this.props.square.etat ===2 ? null : <img src={this.props.square.value} alt="new" width="125" heigth="125"></img>}
@@ -49,14 +55,16 @@ class Square extends React.Component {
             
             const testTable=[]
             
-            const table = (testTable) => arrayNumber.map(x => testTable.push({id: arrayNumber[x], value: arrayNbImage[x]["url"] , etat: 0})) 
+            const table = (testTable) => arrayNumber.map(x => testTable.push({id: arrayNumber[x], value: arrayNbImage[x]["url"] , etat: 0, name:arrayNbImage[x]["name"]})) 
             table(testTable)
             console.log(testTable)
             
             this.state = {
                 table : testTable,
                 player : this.props.player,
-                currentPlayer : {id:0}
+                currentPlayer : {id:0},
+                hard : this.props.hard,
+                predict :""
             };
         }
    async updateBoard(i) {
@@ -93,26 +101,34 @@ class Square extends React.Component {
         
     }
     validateClick(prevstate) {
-        const newState=Object.assign({},prevstate)
-        const etatTable = prevstate.table.filter(x => x.etat === 1);
-        
-        if (etatTable[0].value===etatTable[1].value){
-            //win this cards
-            
-            newState.table[etatTable[0].id].etat= 2
-            newState.table[etatTable[1].id].etat= 2
-            return this.incrementScore(newState,3)
-            
-        }else {
-            //loose next player
-            
-            newState.table[etatTable[0].id].etat=0
-            newState.table[etatTable[1].id].etat=0
-            
-            const newStateIncremented= this.incrementScore(newState,-1)
-            
-            return this.playerTurn(newStateIncremented,1) ;
-        }
+      const newState=Object.assign({},prevstate)
+      const etatTable = prevstate.table.filter(x => x.etat === 1);
+      const nameChamp=newState.table[0].name
+      const predictName=this.state.predict
+      const validateName = () => predictName===nameChamp? true: false
+      
+      if (etatTable[0].value===etatTable[1].value ){
+          //win this cards
+          
+          newState.table[etatTable[0].id].etat= 2
+          newState.table[etatTable[1].id].etat= 2
+          if(this.state.hard){
+            const point= () => validateName()?8:3
+            return this.incrementScore(newState,point())
+          }
+          return this.incrementScore(newState,3)
+          
+      }else {
+          //loose next player
+          
+          newState.table[etatTable[0].id].etat=0
+          newState.table[etatTable[1].id].etat=0
+          
+          const newStateIncremented= this.incrementScore(newState,-1)
+          
+          return this.playerTurn(newStateIncremented,1) ;
+      }
+      
     }
 
     playerTurn(prevstate){
@@ -160,9 +176,12 @@ class Square extends React.Component {
       
       return renderLines
     }
-
+    addPrediction(event){
+      this.setState({predict: event.target.value})
+    }
     render() {
       let play=""
+      let inputRender=""
       if(calculateEndgame(this.state.table)){
         const result=calculateScore(this.state)
         play= <div className="play">
@@ -171,6 +190,9 @@ class Square extends React.Component {
       }
       else{
         play= <div className="play">{this.createLines(this.props.width,this.props.height)}</div>
+        const hardInput=<form>écrit correctement le nom du personnage trouver pour gagner 5 points bonus<input name="hardPrediction" id="hardPred" onChange={this.addPrediction.bind(this)} required ></input></form>
+        const inputTernaire= ()=> this.state.hard?hardInput:""  
+        inputRender=inputTernaire()
       }
         const players = this.state.player
         const quiJoue = (id) => this.state.currentPlayer.id === id ? "En train de jouer" :""
@@ -180,6 +202,7 @@ class Square extends React.Component {
         <div>
         <div className="status">{playerInfo(players)}</div>
         {play}
+        {inputRender}
         </div>
       );
     }
@@ -244,6 +267,18 @@ class Square extends React.Component {
     renderInput(i) {
       return <input name="name" id={i} onChange={() => {this.changePseudo.bind(this,i)}} required ></input> 
     }
+    hardMode(){
+      this.setState((prevstate) => {
+        const newState=Object.assign({},prevstate)
+        if(prevstate.hardcore){
+          newState.hardcore= false
+        }
+        else{
+          newState.hardcore=newState.hardcore= true
+        }
+        return newState
+      })
+    }
     gameSelect(){
       
       const renderListInput =[]
@@ -261,6 +296,9 @@ class Square extends React.Component {
           <button className={"button"} id="nbJoueur" onClick={() => this.updateNumberPlayer()}> 
             {this.state.nbJoueur === 1 ? "1 Joueur" : this.state.nbJoueur === 2 ?"2 Joueur": "3 Joueur"}
           </button>
+          <button id="hard" value={this.state.hardcore} onClick={() => this.hardMode()}>hardCore Mode:
+          {this.state.hardcore ? "ON " : "OFF"}
+          </button>
           </div>
       }
       return ""
@@ -269,11 +307,12 @@ class Square extends React.Component {
       
       return (
         <div className="game">
+          <h2>Bienvenu dans Memory League</h2>
           <div >
             {this.gameSelect()}
           </div>
           <div className="game-board">
-            {this.state.gameSelect ? "" :<Board player={this.state.player} width={this.state.width} height={this.state.height}/>}
+            {this.state.gameSelect ? "" :<Board player={this.state.player} width={this.state.width} hard={this.state.hardcore} height={this.state.height}/>}
           </div>
           <div className="game-info">
             <div>{/* status */}</div>
@@ -320,4 +359,21 @@ function shuffleArray(array) {
         array[i] = array[j];
         array[j] = temp;
     }
+}
+function validateNameChamp(inputName,id){
+  
+  for (let i=0;i<listImg.length;i++){
+    console.log(listImg[i]["id"]," ====",id)
+    if(listImg[i]["id"]===id){
+      
+      if(listImg[i]["name"]==inputName){
+        return true
+      }
+      else{
+        return false
+      }
+    }
+    continue
+  }
+  return false
 }
