@@ -178,30 +178,43 @@ class Square extends React.Component {
     addPrediction(event){
       this.setState({predict: event.target.value})
     }
+    resetGame(){
+      window.location.reload();
+    }
     render() {
       let play=""
       let inputRender=""
       if(calculateEndgame(this.state.table)){
         const result=calculateScore(this.state)
-        play= <div className="play">
+        play= <div className="play">Résultat: 
           {`le joueur ${result}`}
         </div>
       }
       else{
         play= <div className="play">{this.createLines(this.props.width,this.props.height)}</div>
-        const hardInput=<form>écrit correctement le nom du personnage trouver pour gagner 5 points bonus<input name="hardPrediction" id="hardPred" onChange={this.addPrediction.bind(this)} required ></input></form>
+        const hardInput=<form>Ecris correctement le nom du personnage trouvé pour gagner 5 points bonus
+          <input name="hardPrediction" id="hardPred" onChange={this.addPrediction.bind(this)} required ></input>
+          <input type="submit" ></input></form>;
         const inputTernaire= ()=> this.state.hard?hardInput:""  
         inputRender=inputTernaire()
       }
         const players = this.state.player
-        const quiJoue = (id) => this.state.currentPlayer.id === id ? "En train de jouer" :""
-        const playerInfo= (players) => players.map(x => <div >nom : {x.name} score : {x.score}    {quiJoue(x.id)} </div>);
-        
+        const quiJoue = (id) => this.state.currentPlayer.id === id ? "<-Play" :""
+        const playerInfo= (players) => players.map(x => <tr><td> {`${x.name} `}</td> <td>{` score: ${x.score}`}</td><td>{quiJoue(x.id)}</td></tr>);
       return (
         <div>
-        <div className="status">{playerInfo(players)}</div>
-        {play}
-        {inputRender}
+          <div class="table">
+          {playerInfo(players)}
+          </div>
+
+          <div >
+          {play}
+          {inputRender}
+          </div>
+          <div className="leftBlock">
+            <button id="reset" value="Recommencer" onClick={() => this.resetGame()}><img width="20" heigth="20" src="https://img.over-blog-kiwi.com/0/64/48/33/20180321/ob_dbb102_images.png"></img>
+            </button>
+          </div>
         </div>
       );
     }
@@ -288,16 +301,19 @@ class Square extends React.Component {
       if(this.state.gameSelect ){
 ///const table = (testTable) => arrayNumber.map(x => testTable.push({id: arrayNumber[x], value: arrayNbImage[x]["url"] , etat: 0})) 
         
-        return <div><form id="selectGame" onSubmit={this.handleSubmit.bind(this)}> choisir la difficulté ( dimensions du plateau de jeux )
-          <input name="select" id="width" type="number"min="2" max="8" value={this.state.width} onChange={this.changeWidth.bind(this)} required ></input>
-          <input name="select" id="heigth" type="number"min="2" max="8" value={this.state.height} onChange={this.changeHeight.bind(this)} required ></input>       
-          <input type="submit" ></input></form> 
+        return <div>
+          <div>
           <button className={"button"} id="nbJoueur" onClick={() => this.updateNumberPlayer()}> 
             {this.state.nbJoueur === 1 ? "1 Joueur" : this.state.nbJoueur === 2 ?"2 Joueur": "3 Joueur"}
           </button>
-          <button id="hard" value={this.state.hardcore} onClick={() => this.hardMode()}>hardCore Mode:
-          {this.state.hardcore ? "ON " : "OFF"}
-          </button>
+          <button id="hard" value={this.state.hardcore} onClick={() => this.hardMode()}>Hardcore Mode:
+            {this.state.hardcore ? "ON " : "OFF"}
+          </button></div>
+          <form id="selectGame" onSubmit={this.handleSubmit.bind(this)}> Choisis les dimensions du plateau (h x l)
+          <input name="select" id="width" type="number"min="2" max="8" value={this.state.width} onChange={this.changeWidth.bind(this)} required ></input>{` x `} 
+          <input name="select" id="heigth" type="number"min="2" max="8" value={this.state.height} onChange={this.changeHeight.bind(this)} required ></input>       
+          <input type="submit" value="Lancer la partie" ></input></form> 
+          
           </div>
       }
       return ""
@@ -306,7 +322,7 @@ class Square extends React.Component {
       
       return (
         <div className="game">
-          <h2>Bienvenu dans Memory League</h2>
+          <h2>Bienvenue dans Memory League</h2>
           <div >
             {this.gameSelect()}
           </div>
