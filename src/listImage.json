@@ -223,10 +223,6 @@
     "name": "Kindred",
     "url": "https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/6e/KindredSquare.png"
 }, {
-    "id": 56,
-    "name": "Kled Skaarl",
-    "url": "https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/a/ae/Kled_SkaarlSquare.png"
-}, {
     "id": 57,
     "name": "Kled",
     "url": "https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/e/ef/KledSquare.png"
@@ -319,10 +315,6 @@
     "name": "Nocturne",
     "url": "https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/6/65/NocturneSquare.png"
 }, {
-    "id": 80,
-    "name": "NunuBot",
-    "url": "https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/4/40/NunuBotSquare.png"
-}, {
     "id": 81,
     "name": "Olaf",
     "url": "https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/2/2b/OlafSquare.png"
@@ -410,10 +402,6 @@
     "id": 102,
     "name": "Shaco",
     "url": "https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/9/93/ShacoSquare.png"
-}, {
-    "id": 103,
-    "name": "Shadow Kayn Rhaast",
-    "url": "https://static.wikia.nocookie.net/lolesports_gamepedia_en/images/4/4b/Shadow_Kayn_RhaastSquare.png"
 }, {
     "id": 104,
     "name": "Shen",
